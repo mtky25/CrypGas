@@ -1,0 +1,60 @@
+
+teste.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+04000000 <_start>:
+ 4000000:	e59fd004 	ldr	sp, [pc, #4]	; 400000c <hang+0x4>
+ 4000004:	eb000023 	bl	4000098 <main>
+
+04000008 <hang>:
+ 4000008:	eafffffe 	b	4000008 <hang>
+ 400000c:	040010c0 	.word	0x040010c0
+
+04000010 <uart_putc>:
+ 4000010:	e52db004 	push	{fp}		; (str fp, [sp, #-4]!)
+ 4000014:	e28db000 	add	fp, sp, #0
+ 4000018:	e24dd00c 	sub	sp, sp, #12
+ 400001c:	e1a03000 	mov	r3, r0
+ 4000020:	e54b3005 	strb	r3, [fp, #-5]
+ 4000024:	e3a02409 	mov	r2, #150994944	; 0x9000000
+ 4000028:	e55b3005 	ldrb	r3, [fp, #-5]
+ 400002c:	e5823000 	str	r3, [r2]
+ 4000030:	e320f000 	nop	{0}
+ 4000034:	e28bd000 	add	sp, fp, #0
+ 4000038:	e49db004 	pop	{fp}		; (ldr fp, [sp], #4)
+ 400003c:	e12fff1e 	bx	lr
+
+04000040 <uart_puts>:
+ 4000040:	e52db008 	str	fp, [sp, #-8]!
+ 4000044:	e58de004 	str	lr, [sp, #4]
+ 4000048:	e28db004 	add	fp, sp, #4
+ 400004c:	e24dd008 	sub	sp, sp, #8
+ 4000050:	e50b0008 	str	r0, [fp, #-8]
+ 4000054:	ea000005 	b	4000070 <uart_puts+0x30>
+ 4000058:	e51b3008 	ldr	r3, [fp, #-8]
+ 400005c:	e2832001 	add	r2, r3, #1
+ 4000060:	e50b2008 	str	r2, [fp, #-8]
+ 4000064:	e5d33000 	ldrb	r3, [r3]
+ 4000068:	e1a00003 	mov	r0, r3
+ 400006c:	ebffffe7 	bl	4000010 <uart_putc>
+ 4000070:	e51b3008 	ldr	r3, [fp, #-8]
+ 4000074:	e5d33000 	ldrb	r3, [r3]
+ 4000078:	e3530000 	cmp	r3, #0
+ 400007c:	1afffff5 	bne	4000058 <uart_puts+0x18>
+ 4000080:	e320f000 	nop	{0}
+ 4000084:	e320f000 	nop	{0}
+ 4000088:	e24bd004 	sub	sp, fp, #4
+ 400008c:	e59db000 	ldr	fp, [sp]
+ 4000090:	e28dd004 	add	sp, sp, #4
+ 4000094:	e49df004 	pop	{pc}		; (ldr pc, [sp], #4)
+
+04000098 <main>:
+ 4000098:	e52db008 	str	fp, [sp, #-8]!
+ 400009c:	e58de004 	str	lr, [sp, #4]
+ 40000a0:	e28db004 	add	fp, sp, #4
+ 40000a4:	e30000b4 	movw	r0, #180	; 0xb4
+ 40000a8:	e3400400 	movt	r0, #1024	; 0x400
+ 40000ac:	ebffffe3 	bl	4000040 <uart_puts>
+ 40000b0:	eafffffe 	b	40000b0 <main+0x18>
