@@ -1,23 +1,24 @@
 ENTRY(_start)
 
 SECTIONS {
-    . = 0x4000000;
+    . = 0x8000;
 
     .text : {
-        *(.text*)
+        *(.text)
     }
-
+    .rodata : {
+        *(.rodata*)
+    }
     .data : {
         *(.data*)
     }
 
     .bss : {
-        bss_begin = .;
         *(.bss*)
         *(COMMON)
-        bss_end = .;
+        . = ALIGN(8);
     }
 
-    . = ALIGN(8);
-    _stack_top = . + 0x1000;
+    . = . + 0x1000;
+    stack_top = .;
 }
