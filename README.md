@@ -8,7 +8,7 @@ Inicialização e configuração são feitas com um arquivo em **Assembly** e um
 ## Requisitos
 - Raspberry Pi 2 (ou compatível)
 
-- Cabo USB-UART (115200 baud)
+- Cabo USB-UART (9600 baud)
 
 - Toolchain ARM: arm-none-eabi-gcc, arm-none-eabi-ld, arm-none-eabi-objcopy
 
