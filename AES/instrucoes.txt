@@ -1,0 +1,7 @@
+Para compilar o código em C: gcc aes.c -o aes
+Para executá-lo: ./aes text.txt
+
+Para compilar o código em C++: g++ aescpp.cpp -o aescpp -lcryptopp
+Para executá-lo: ./aescpp text.txt
+
+Para executar o código em Python: python3 aespy.py text.txt
