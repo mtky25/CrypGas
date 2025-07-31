@@ -21,4 +21,5 @@ SECTIONS {
 
     . = . + 0x1000;
     stack_top = .;
+    heap_svr = .;
 }

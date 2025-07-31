@@ -1,9 +1,8 @@
 #include "crypgas.h"
 #include "cesar.h"
-// #include "aes.h"
-#include "../AES/aes.h"
+#include "aes.h"
 // #include "des.h"
-// #include "blowfish.h"
+#include "blowfish.h"
 
 void encrypt(crypto_algorithm_t alg, uint8_t *input, uint8_t *output, size_t len) {
     switch (alg) {
@@ -29,18 +28,18 @@ void encrypt(crypto_algorithm_t alg, uint8_t *input, uint8_t *output, size_t len
         }
 
         case ALG_DES:
-            des_encrypt(input, output, len);
+            // des_encrypt(input, output, len);
             break;
 
         case ALG_BLOWFISH:
-            size_t len = strlen(frase);
-            if (frase[len - 1] == '\n') frase[len - 1] = '\0';
-            len = strlen(frase);
-            blowfish_encrypt_cbc(uint8_t *data, size_t len)
-            break;
+            // size_t len = strlen(input);
+            // if (input[len - 1] == '\n') 
+            //     input[len - 1] = '\0';
+            // len = strlen(input);
+            // blowfish_encrypt_cbc(uint8_t *data, size_t len);
+            // break;
 
         default:
-            // Algoritmo inválido
             break;
     }
 }

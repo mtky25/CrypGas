@@ -3,7 +3,9 @@
 #include "benchmark.h"
 #include <string.h>
 
-void main(void) {
+unsigned heap_svr = 0;
+
+int main(void) {
     uart_init();
 
     char buffer[100];
@@ -11,6 +13,7 @@ void main(void) {
     char c = 0;
     int i = 0;
     int escolha = 0;
+    uart_puts("Escolha algoritmo de Criptografia:\r\n");
 
     // Menu de escolha
     while (escolha < 1 || escolha > 4) {

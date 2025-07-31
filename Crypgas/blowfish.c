@@ -129,47 +129,47 @@ void blowfish_decrypt_cbc(uint8_t *data, size_t len) {
     }
 }
 
-int main() {
-    char frase[256];
-    printf("Digite uma frase (até 255 caracteres):\n");
-    fgets(frase, sizeof(frase), stdin);
+// int main() {
+//     char frase[256];
+//     printf("Digite uma frase (até 255 caracteres):\n");
+//     fgets(frase, sizeof(frase), stdin);
 
-    size_t len = strlen(frase);
-    if (frase[len - 1] == '\n') frase[len - 1] = '\0';
-    len = strlen(frase);
+//     size_t len = strlen(frase);
+//     if (frase[len - 1] == '\n') frase[len - 1] = '\0';
+//     len = strlen(frase);
 
-    // Padding para múltiplo de 8 bytes
-    size_t padded_len = ((len + 7) / 8) * 8;
-    uint8_t *buffer = calloc(padded_len, 1);
-    memcpy(buffer, frase, len);
+//     // Padding para múltiplo de 8 bytes
+//     size_t padded_len = ((len + 7) / 8) * 8;
+//     uint8_t *buffer = calloc(padded_len, 1);
+//     memcpy(buffer, frase, len);
 
-    // Vetor de inicialização (IV) fixo para exemplo
-    uint32_t iv_left = 0x12345678;
-    uint32_t iv_right = 0x9ABCDEF0;
+//     // Vetor de inicialização (IV) fixo para exemplo
+//     uint32_t iv_left = 0x12345678;
+//     uint32_t iv_right = 0x9ABCDEF0;
 
-    printf("\nTexto original (hex):\n");
-    for (size_t i = 0; i < padded_len; i += 8) {
-        uint32_t left = 0, right = 0;
-        memcpy(&left, buffer + i, 4);
-        memcpy(&right, buffer + i + 4, 4);
-        print_block(left, right);
-    }
+//     printf("\nTexto original (hex):\n");
+//     for (size_t i = 0; i < padded_len; i += 8) {
+//         uint32_t left = 0, right = 0;
+//         memcpy(&left, buffer + i, 4);
+//         memcpy(&right, buffer + i + 4, 4);
+//         print_block(left, right);
+//     }
 
-    blowfish_encrypt_cbc(buffer, padded_len);
+//     blowfish_encrypt_cbc(buffer, padded_len);
 
-    printf("\nCriptografado (hex):\n");
-    for (size_t i = 0; i < padded_len; i += 8) {
-        uint32_t left = 0, right = 0;
-        memcpy(&left, buffer + i, 4);
-        memcpy(&right, buffer + i + 4, 4);
-        print_block(left, right);
-    }
+//     printf("\nCriptografado (hex):\n");
+//     for (size_t i = 0; i < padded_len; i += 8) {
+//         uint32_t left = 0, right = 0;
+//         memcpy(&left, buffer + i, 4);
+//         memcpy(&right, buffer + i + 4, 4);
+//         print_block(left, right);
+//     }
 
-    blowfish_decrypt_cbc(buffer, padded_len);
+//     blowfish_decrypt_cbc(buffer, padded_len);
 
-    printf("\nDescriptografado:\n");
-    printf("%s\n", buffer);
+//     printf("\nDescriptografado:\n");
+//     printf("%s\n", buffer);
 
-    free(buffer);
-    return 0;
-}
+//     free(buffer);
+//     return 0;
+// }
