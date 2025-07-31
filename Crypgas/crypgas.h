@@ -7,9 +7,9 @@
 // Enum para selecionar algoritmo
 typedef enum {
     ALG_CESAR = 1,
-    ALG_AES,
+    ALG_AES = 2,
     ALG_DES,
-    ALG_BLOWFISH
+    ALG_BLOWFISH = 4
 } crypto_algorithm_t;
 
 // Função genérica para criptografar

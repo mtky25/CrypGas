@@ -1,8 +1,8 @@
 #include "crypgas.h"
 #include "cesar.h"
-// #include "aes.h"
-// #include "des.h"
-// #include "blowfish.h"
+#include "aes.h"
+#include "des.h"
+#include "blowfish.h"
 
 void encrypt(crypto_algorithm_t alg, uint8_t *input, uint8_t *output, size_t len) {
     switch (alg) {
@@ -12,7 +12,8 @@ void encrypt(crypto_algorithm_t alg, uint8_t *input, uint8_t *output, size_t len
             break;
 
         case ALG_AES:
-            aes_encrypt(input, output, len);
+            aes_encrypt(input, output, unsigned char *key, enum keySize size);
+
             break;
 
         case ALG_DES:
@@ -20,35 +21,14 @@ void encrypt(crypto_algorithm_t alg, uint8_t *input, uint8_t *output, size_t len
             break;
 
         case ALG_BLOWFISH:
-            blowfish_encrypt(input, output, len);
+            size_t len = strlen(frase);
+            if (frase[len - 1] == '\n') frase[len - 1] = '\0';
+            len = strlen(frase);
+            blowfish_encrypt_cbc(uint8_t *data, size_t len)
             break;
 
         default:
             // Algoritmo inválido
             break;
-    }
-}
-
-
-
-char cifra_cesar(char c, int chave) {
-    chave %= 26; 
-    if (chave < 0) chave += 26;
-
-    if (c >= 'A' && c <= 'Z') {
-        return ((c - 'A' + chave) % 26) + 'A';
-    } else if (c >= 'a' && c <= 'z') {
-        return ((c - 'a' + chave) % 26) + 'a';
-    } else if (c >= '0' && c <= '9') {
-        // Para números, usa módulo 10
-        int chaveNum = (chave % 10 + 10) % 10;
-        return ((c - '0' + chaveNum) % 10) + '0';
-    }
-    return c; 
-}
-
-void apply_cifra(char *str, int chave) {
-    for (int i = 0; str[i] != '\0'; i++) {
-        str[i] = cifra_cesar(str[i], chave);
     }
 }
