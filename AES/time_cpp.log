@@ -1,18 +1,18 @@
 	Command being timed: "./aescpp text.txt"
-	User time (seconds): 1.48
-	System time (seconds): 0.81
-	Percent of CPU this job got: 15%
-	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:14.84
+	User time (seconds): 0.00
+	System time (seconds): 0.00
+	Percent of CPU this job got: 75%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:00.00
 	Average shared text size (kbytes): 0
 	Average unshared data size (kbytes): 0
 	Average stack size (kbytes): 0
 	Average total size (kbytes): 0
-	Maximum resident set size (kbytes): 119604
+	Maximum resident set size (kbytes): 6400
 	Average resident set size (kbytes): 0
 	Major (requiring I/O) page faults: 0
-	Minor (reclaiming a frame) page faults: 46015
-	Voluntary context switches: 4688
-	Involuntary context switches: 104
+	Minor (reclaiming a frame) page faults: 261
+	Voluntary context switches: 1
+	Involuntary context switches: 1
 	Swaps: 0
 	File system inputs: 0
 	File system outputs: 0
@@ -23,6 +23,6 @@
 	Exit status: 0
 
 ==== RESULTADO FINAL AES C++ ====
-Tempo: 14.84s
-RAM: 119604 KB
-CPU: 15%
+Tempo: 0.00s
+RAM: 6400 KB
+CPU: 75%

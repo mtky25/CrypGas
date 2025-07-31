@@ -1,3 +1,45 @@
+#include "aes.h"
+// Função utilitária para CBC com padding e IV igual ao main
+aes_cbc_result_t aes_encrypt_buffer_cbc(const unsigned char *input, size_t input_len, const unsigned char *key, enum keySize size) {
+    int block_size = 16;
+    int pad_len = block_size - (input_len % block_size);
+    size_t padded_size = input_len + pad_len;
+
+    unsigned char *plaintext = (unsigned char *)malloc(padded_size);
+    unsigned char *ciphertext = (unsigned char *)malloc(padded_size);
+    aes_cbc_result_t result = {0};
+    if (!plaintext || !ciphertext) {
+        if (plaintext) free(plaintext);
+        if (ciphertext) free(ciphertext);
+        result.ciphertext = NULL;
+        result.ciphertext_len = 0;
+        return result;
+    }
+
+    memcpy(plaintext, input, input_len);
+    memset(plaintext + input_len, pad_len, pad_len); // PKCS#7 padding
+
+    // IV aleatório (não criptograficamente seguro)
+    unsigned char iv[16];
+    srand((unsigned int)time(NULL));
+    for (int i = 0; i < 16; i++) iv[i] = rand() & 0xFF;
+    memcpy(result.iv, iv, 16);
+
+    unsigned char prev[16];
+    memcpy(prev, iv, 16);
+    for (size_t i = 0; i < padded_size; i += 16) {
+        unsigned char block[16];
+        for (int j = 0; j < 16; j++)
+            block[j] = plaintext[i + j] ^ prev[j];
+        aes_encrypt(block, ciphertext + i, (unsigned char*)key, size);
+        memcpy(prev, ciphertext + i, 16);
+    }
+
+    result.ciphertext = ciphertext;
+    result.ciphertext_len = padded_size;
+    free(plaintext);
+    return result;
+}
 /* Basic implementation of AES in C
  *
  * Warning: THIS CODE IS ONLY FOR LEARNING PURPOSES
@@ -129,45 +171,27 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    // Get file size
     fseek(fp, 0, SEEK_END);
     long filesize = ftell(fp);
     fseek(fp, 0, SEEK_SET);
 
-    // PKCS#7 padding
-    int block_size = 16;
-    int pad_len = block_size - (filesize % block_size);
-    long padded_size = filesize + pad_len;
-
-    unsigned char *plaintext = (unsigned char *)malloc(padded_size);
-    unsigned char *ciphertext = (unsigned char *)malloc(padded_size);
-    unsigned char *decryptedtext = (unsigned char *)malloc(padded_size);
-    if (!plaintext || !ciphertext || !decryptedtext) {
+    unsigned char *plaintext = (unsigned char *)malloc(filesize);
+    if (!plaintext) {
         printf("Error: Memory allocation failed\n");
         fclose(fp);
-        free(plaintext); free(ciphertext); free(decryptedtext);
         return 1;
     }
-
     size_t read_bytes = fread(plaintext, 1, filesize, fp);
     fclose(fp);
     if (read_bytes != filesize) {
         printf("Error: Could not read file\n");
-        free(plaintext); free(ciphertext); free(decryptedtext);
+        free(plaintext);
         return 1;
     }
 
-    // Apply PKCS#7 padding
-    memset(plaintext + filesize, pad_len, pad_len);
-
-    // the cipher key
     unsigned char key[16] = {'k', 'k', 'k', 'k', 'e', 'e', 'e', 'e', 'y', 'y', 'y', 'y', '.', '.', '.', '.'};
     enum keySize size = SIZE_16;
-
-    // Generate IV (for demo: random, but not cryptographically secure)
-    unsigned char iv[16];
-    srand((unsigned int)time(NULL));
-    for (int i = 0; i < 16; i++) iv[i] = rand() & 0xFF;
+    aes_cbc_result_t result = aes_encrypt_buffer_cbc(plaintext, filesize, key, size);
 
     printf("\nCipher Key (HEX format):\n");
     for (int i = 0; i < 16; i++)
@@ -175,55 +199,18 @@ int main(int argc, char *argv[])
 
     printf("\nIV (HEX format):\n");
     for (int i = 0; i < 16; i++)
-        printf("%2.2x%c", iv[i], ((i + 1) % 16) ? ' ' : '\n');
+        printf("%2.2x%c", result.iv[i], ((i + 1) % 16) ? ' ' : '\n');
 
     printf("\nPlaintext (HEX format):\n");
-    for (long i = 0; i < padded_size; i++)
+    for (long i = 0; i < filesize; i++)
         printf("%2.2x%c", plaintext[i], ((i + 1) % 16) ? ' ' : '\n');
 
-    // CBC Encryption
-    unsigned char prev[16];
-    memcpy(prev, iv, 16);
-    for (long i = 0; i < padded_size; i += 16) {
-        unsigned char block[16];
-        for (int j = 0; j < 16; j++)
-            block[j] = plaintext[i + j] ^ prev[j];
-        aes_encrypt(block, ciphertext + i, key, size);
-        memcpy(prev, ciphertext + i, 16);
-    }
-
     printf("\nCiphertext (HEX format):\n");
-    for (long i = 0; i < padded_size; i++)
-        printf("%2.2x%c", ciphertext[i], ((i + 1) % 16) ? ' ' : '\n');
-
-    // CBC Decryption
-    memcpy(prev, iv, 16);
-    for (long i = 0; i < padded_size; i += 16) {
-        unsigned char block[16];
-        aes_decrypt(ciphertext + i, block, key, size);
-        for (int j = 0; j < 16; j++)
-            decryptedtext[i + j] = block[j] ^ prev[j];
-        memcpy(prev, ciphertext + i, 16);
-    }
-
-    // Remove PKCS#7 padding
-    int unpad = decryptedtext[padded_size - 1];
-    long unpadded_size = padded_size - unpad;
-    if (unpad < 1 || unpad > 16) unpadded_size = padded_size; // fallback if padding is invalid
-
-    printf("\nDecrypted text (HEX format):\n");
-    for (long i = 0; i < unpadded_size; i++)
-        printf("%2.2x%c", decryptedtext[i], ((i + 1) % 16) ? ' ' : '\n');
-
-    // Optionally print as ASCII (for verification)
-    printf("\nDecrypted text (ASCII):\n");
-    for (long i = 0; i < unpadded_size; i++)
-        printf("%c", decryptedtext[i]);
-    printf("\n");
+    for (size_t i = 0; i < result.ciphertext_len; i++)
+        printf("%2.2x%c", result.ciphertext[i], ((i + 1) % 16) ? ' ' : '\n');
 
     free(plaintext);
-    free(ciphertext);
-    free(decryptedtext);
+    free(result.ciphertext);
     return 0;
 }
 
