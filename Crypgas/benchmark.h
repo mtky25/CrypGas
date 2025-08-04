@@ -1,22 +1,19 @@
-#include <stdint.h>
-
 #ifndef BENCHMARK_H
 #define BENCHMARK_H
 
-// Frequência do CPU do Raspberry Pi 2 (900 MHz)
-#define CPU_FREQ_HZ 900000000UL
+#include <stdint.h>
 
-// Inicializa o contador de ciclos
-void benchmark_init(void);
+/* Marca início e fim da medição */
+void benchmark_start(uint64_t *start);
+void benchmark_end(uint64_t *end);
 
-// Retorna o valor atual do contador de ciclos
-uint32_t benchmark_get_cycles(void);
+/* Converte microssegundos para segundos */
+float benchmark_us_to_seconds(uint64_t us);
 
-// Converte ciclos em microssegundos
-uint32_t benchmark_cycles_to_us(uint32_t cycles);
+/* Calcula throughput (bytes/s) a partir de tempo em us */
+float benchmark_calc_throughput(uint32_t bytes, uint64_t us);
 
-// Calcula throughput em bytes por segundo
-uint32_t benchmark_calc_throughput(uint32_t bytes, uint32_t cycles);
+/* Função para leitura bruta do System Timer */
+uint64_t benchmark_get_system_timer(void);
 
-#endif 
-
+#endif

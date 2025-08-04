@@ -62,16 +62,15 @@ int main(void) {
             uart_puts("\r\nEncerrando...\r\n");
             break;
         }
-
-        uint32_t start = benchmark_get_cycles();
+        uint64_t start,end;
+        benchmark_start(&start);
         encrypt((crypto_algorithm_t)escolha, (uint8_t*)buffer, (uint8_t*)output, i);
         output[i] = '\0';
-        uint32_t end = benchmark_get_cycles();
-
+        benchmark_start(&end);
         // benchmark
-        uint32_t ciclos = end - start;
-        uint32_t tempo_us = benchmark_cycles_to_us(ciclos);
-        uint32_t throughput = benchmark_calc_throughput(i, ciclos);
+        uint64_t tempo_us = end - start; // direto em us
+        float tempo_s = benchmark_us_to_seconds(tempo_us);
+        // float throughput = benchmark_calc_throughput(size, tempo_us);
 
         // Mostra resultado criptografado
         uart_puts("\r\nResposta:\r\n");
@@ -81,18 +80,13 @@ int main(void) {
         // Mostra benchmark
         char msg[20];
 
-        uart_puts("Ciclos: ");
-        uitoa(ciclos, msg);
-        uart_puts(msg);
-        uart_puts("\r\n");
-
         uart_puts("Tempo (us): ");
         uitoa(tempo_us, msg);
         uart_puts(msg);
         uart_puts("\r\n");
 
         uart_puts("Throughput (B/s): ");
-        uitoa(throughput, msg);
+        uitoa(tempo_s, msg);
         uart_puts(msg);
         uart_puts("\r\n");
     }
