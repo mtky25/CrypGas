@@ -2,6 +2,7 @@
 #include "uart.h"
 #include "benchmark.h"
 #include <string.h>
+#include "utils.h"
 
 unsigned heap_svr = 0;
 
@@ -64,6 +65,7 @@ int main(void) {
 
         uint32_t start = benchmark_get_cycles();
         encrypt((crypto_algorithm_t)escolha, (uint8_t*)buffer, (uint8_t*)output, i);
+        output[i] = '\0';
         uint32_t end = benchmark_get_cycles();
 
         // benchmark
