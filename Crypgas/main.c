@@ -47,15 +47,23 @@ int main(void) {
     uint64_t tipo_input = 0;
     uint64_t tamanho = DEFAULT_SIZE;
     uint64_t i = 0;
+    uint64_t operacao = 0; // 1 - Criptografar, 2 - Descriptografar
 
     /* Escolha do algoritmo */
     uart_puts("Escolha algoritmo de Criptografia:\r\n");
     uart_puts("1 - Cifra de Cesar\r\n");
     uart_puts("2 - AES\r\n");
-    uart_puts("3 - DES\r\n");
-    uart_puts("4 - Blowfish\r\n");
-    while (escolha < 1 || escolha > 4) {
+    uart_puts("3 - Blowfish\r\n");
+    while (escolha < 1 || escolha > 3) {
         escolha = uart_get() - '0'; 
+    }
+
+    /* Escolha da operação */
+    uart_puts("\r\nEscolha a operacao:\r\n");
+    uart_puts("1 - Criptografar\r\n");
+    uart_puts("2 - Descriptografar\r\n");
+    while (operacao < 1 || operacao > 2) {
+        operacao = uart_get() - '0';
     }
 
     /* Escolha do modo */
@@ -123,7 +131,15 @@ int main(void) {
         memset(output, 0, sizeof(output));
 
         benchmark_start(&start);
-        encrypt((crypto_algorithm_t)escolha, (uint8_t*)buffer, (uint8_t*)output, (uint32_t)i);
+
+        if (operacao == 1) {
+            /* Criptografar */
+            encrypt((crypto_algorithm_t)escolha, (uint8_t*)buffer, (uint8_t*)output, (uint32_t)i);
+        } else {
+            /* Descriptografar */
+            decrypt((crypto_algorithm_t)escolha, (uint8_t*)buffer, (uint8_t*)output, (uint32_t)i);
+        }
+
         output[i] = '\0';
         benchmark_end(&end);
 

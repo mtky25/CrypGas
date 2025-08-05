@@ -14,5 +14,6 @@ typedef enum {
 
 // Função genérica para criptografar
 void encrypt(crypto_algorithm_t alg, uint8_t *input, uint8_t *output, uint32_t len);
+void decrypt(crypto_algorithm_t alg, uint8_t *input, uint8_t *output, uint32_t len);
 
 #endif

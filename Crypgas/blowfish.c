@@ -124,3 +124,66 @@ void blowfish_encrypt_cbc_padded(blowfish_ctx_t *ctx,
 
     *output_len = padded_len;
 }
+
+void blowfish_decrypt_cbc_padded(blowfish_ctx_t *ctx,
+                                  const uint8_t *input,
+                                  uint32_t input_len,
+                                  uint8_t *output,
+                                  uint32_t *output_len,
+                                  const uint8_t iv[BLOWFISH_BLOCK_SIZE]) {
+    if (input_len % 8 != 0 || input_len == 0) {
+        *output_len = 0;
+        return; // inválido
+    }
+
+    uint8_t prev[8];
+    memcpy(prev, iv, 8);
+
+    for (uint32_t i = 0; i < input_len; i += 8) {
+        // Lê bloco criptografado
+        uint32_t L = (input[i+0]<<24)|(input[i+1]<<16)|(input[i+2]<<8)|input[i+3];
+        uint32_t R = (input[i+4]<<24)|(input[i+5]<<16)|(input[i+6]<<8)|input[i+7];
+
+        // Salva bloco atual para usar como "prev" no próximo passo
+        uint8_t current_block[8];
+        memcpy(current_block, input + i, 8);
+
+        // Descriptografa bloco
+        blowfish_decrypt_block(ctx, &L, &R);
+
+        uint8_t decrypted[8];
+        decrypted[0] = (L >> 24) & 0xFF;
+        decrypted[1] = (L >> 16) & 0xFF;
+        decrypted[2] = (L >> 8)  & 0xFF;
+        decrypted[3] = L & 0xFF;
+        decrypted[4] = (R >> 24) & 0xFF;
+        decrypted[5] = (R >> 16) & 0xFF;
+        decrypted[6] = (R >> 8)  & 0xFF;
+        decrypted[7] = R & 0xFF;
+
+        // XOR com IV ou bloco anterior
+        for (int j = 0; j < 8; j++)
+            decrypted[j] ^= prev[j];
+
+        memcpy(output + i, decrypted, 8);
+
+        memcpy(prev, current_block, 8); // atualiza prev
+    }
+
+    // Remover padding PKCS#7
+    uint8_t pad = output[input_len - 1];
+    if (pad == 0 || pad > 8) {
+        *output_len = 0; // padding inválido
+        return;
+    }
+
+    // Verifica se todos os bytes de padding são iguais
+    for (int i = 1; i <= pad; i++) {
+        if (output[input_len - i] != pad) {
+            *output_len = 0; // padding inválido
+            return;
+        }
+    }
+
+    *output_len = input_len - pad;
+}
