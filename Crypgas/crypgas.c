@@ -3,12 +3,14 @@
 #include "aes.h"
 // #include "des.h"
 #include "blowfish.h"
+#include <stdlib.h>
+#include <string.h>
 
-void encrypt(crypto_algorithm_t alg, uint8_t *input, uint8_t *output, size_t len) {
+void encrypt(crypto_algorithm_t alg, uint8_t *input, uint8_t *output, uint32_t len) {
     switch (alg) {
         case ALG_CESAR:
-            apply_cifra((char*)input, 3); // César usa inplace
-            for (size_t i = 0; i < len; i++) output[i] = input[i];
+            apply_cifra((char*)input, 3); // César é inplace
+            memcpy(output, input, len);
             break;
 
         case ALG_AES: {
@@ -16,14 +18,12 @@ void encrypt(crypto_algorithm_t alg, uint8_t *input, uint8_t *output, size_t len
             unsigned char key[16] = {'k','k','k','k','e','e','e','e','y','y','y','y','.','.','.','.'};
             enum keySize size = SIZE_16;
             aes_cbc_result_t result = aes_encrypt_buffer_cbc(input, len, key, size);
-            if (result.ciphertext && result.ciphertext_len <= len) {
-                memcpy(output, result.ciphertext, result.ciphertext_len);
-            } else if (result.ciphertext) {
-                // Se output for menor que ciphertext_len, copia só o que cabe
-                memcpy(output, result.ciphertext, len);
+            if (result.ciphertext) {
+                // copia o que couber
+                uint32_t copy_len = (result.ciphertext_len < len) ? result.ciphertext_len : len;
+                memcpy(output, result.ciphertext, copy_len);
+                free(result.ciphertext);
             }
-            // (Opcional: salvar IV em algum lugar, se precisar para descriptografia)
-            if (result.ciphertext) free(result.ciphertext);
             break;
         }
 
@@ -31,13 +31,19 @@ void encrypt(crypto_algorithm_t alg, uint8_t *input, uint8_t *output, size_t len
             // des_encrypt(input, output, len);
             break;
 
-        case ALG_BLOWFISH:
-            // size_t len = strlen(input);
-            // if (input[len - 1] == '\n') 
-            //     input[len - 1] = '\0';
-            // len = strlen(input);
-            // blowfish_encrypt_cbc(uint8_t *data, size_t len);
-            // break;
+        case ALG_BLOWFISH: {
+            blowfish_ctx_t ctx;
+            uint8_t key[] = {'b','l','o','w','f','i','s','h','k','e','y'};
+            uint8_t iv[BLOWFISH_BLOCK_SIZE] = {0};
+            uint32_t out_len = 0;
+
+            blowfish_init(&ctx, key, sizeof(key));
+            blowfish_encrypt_cbc_padded(&ctx, input, len, output, &out_len, iv);
+
+            // Atualiza len com tamanho real
+            len = out_len;
+            break;
+        }
 
         default:
             break;

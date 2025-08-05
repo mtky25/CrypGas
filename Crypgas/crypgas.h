@@ -8,11 +8,11 @@
 typedef enum {
     ALG_CESAR = 1,
     ALG_AES = 2,
-    ALG_DES,
+    ALG_DES = 3,
     ALG_BLOWFISH = 4
 } crypto_algorithm_t;
 
 // Função genérica para criptografar
-void encrypt(crypto_algorithm_t alg, uint8_t *input, uint8_t *output, size_t len);
+void encrypt(crypto_algorithm_t alg, uint8_t *input, uint8_t *output, uint32_t len);
 
 #endif

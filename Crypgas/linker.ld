@@ -20,6 +20,7 @@ SECTIONS {
     }
 
     . = . + 0x1000;
+    _stack_size = 64K;
     stack_top = .;
     heap_svr = .;
 }

@@ -1,4 +1,5 @@
 #include "utils.h"
+#include "uart.h"
 
 void uitoa(uint32_t num, char *str) {
     char buffer[11];  
@@ -58,4 +59,29 @@ void uitox(uint32_t num, char *str, int with_prefix) {
     }
 
     str[j] = '\0';
+}
+
+/* Implementação simples de atoi */
+int atoi(const char *str) {
+    int result = 0;
+    int sign = 1;
+
+    // Ignora espaços
+    while (*str == ' ') str++;
+
+    // Verifica sinal
+    if (*str == '-') {
+        sign = -1;
+        str++;
+    } else if (*str == '+') {
+        str++;
+    }
+
+    // Converte dígitos
+    while (*str >= '0' && *str <= '9') {
+        result = result * 10 + (*str - '0');
+        str++;
+    }
+
+    return result * sign;
 }
