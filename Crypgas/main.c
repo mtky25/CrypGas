@@ -144,8 +144,6 @@ int main(void) {
         benchmark_end(&end);
 
         uint64_t tempo_us = end - start;
-        float tempo_ms = tempo_us / 1000.0f;
-        float tempo_s = tempo_us / 1000000.0f;
         float throughput = benchmark_calc_throughput(i, tempo_us);
 
         /* Mostra resultado */
@@ -156,16 +154,6 @@ int main(void) {
         char msg[32];
         uart_puts("Tempo (us): ");
         uitoa(tempo_us, msg);
-        uart_puts(msg);
-        uart_puts("\r\n");
-
-        uart_puts("Tempo (ms): ");
-        uitoa((uint32_t)tempo_ms, msg);
-        uart_puts(msg);
-        uart_puts("\r\n");
-
-        uart_puts("Tempo (s): ");
-        uitoa((uint32_t)tempo_s, msg);
         uart_puts(msg);
         uart_puts("\r\n");
 

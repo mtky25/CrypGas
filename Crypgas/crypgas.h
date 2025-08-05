@@ -8,8 +8,7 @@
 typedef enum {
     ALG_CESAR = 1,
     ALG_AES = 2,
-    ALG_DES = 3,
-    ALG_BLOWFISH = 4
+    ALG_BLOWFISH = 3
 } crypto_algorithm_t;
 
 // Função genérica para criptografar

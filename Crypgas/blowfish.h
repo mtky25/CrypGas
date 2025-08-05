@@ -26,9 +26,6 @@ void blowfish_encrypt_block(blowfish_ctx_t *ctx, uint32_t *left, uint32_t *right
 // Função para descriptografar um bloco com Blowfish
 void blowfish_decrypt_block(blowfish_ctx_t *ctx, uint32_t *left, uint32_t *right);
 
-// Função para aplicar o padding PKCS7 no bloco
-uint32_t apply_pkcs7(uint8_t *buffer, uint32_t len);
-
 // Função para criptografar com Blowfish no modo CBC com padding seguro
 void blowfish_encrypt_cbc_padded(blowfish_ctx_t *ctx,
                                   const uint8_t *input,
