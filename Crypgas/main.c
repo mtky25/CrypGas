@@ -131,28 +131,69 @@ int main(void) {
         memset(output, 0, sizeof(output));
 
         benchmark_start(&start);
-
+        benchmark_end(&end);
+        /* Criptografar */
         if (operacao == 1) {
-            /* Criptografar */
-            encrypt((crypto_algorithm_t)escolha, (uint8_t*)buffer, (uint8_t*)output, (uint32_t)i);
-        } else {
-            /* Descriptografar */
-            decrypt((crypto_algorithm_t)escolha, (uint8_t*)buffer, (uint8_t*)output, (uint32_t)i);
+            benchmark_start(&start);
+            uint32_t result_len = encrypt((crypto_algorithm_t)escolha,
+                                          (uint8_t*)buffer,
+                                          (uint8_t*)output,
+                                          (uint32_t)i);
+            benchmark_end(&end);
+            if (escolha == ALG_CESAR) {
+                /* César: imprime texto puro */
+                uart_puts("\r\nResposta (Texto):\r\n");
+                uart_puts(output);
+                uart_puts("\r\n");
+            } else {
+                /* AES / Blowfish: imprime HEX */
+                char hex_output[TEST_SIZE * 2 + 1];
+                buffer_to_hex((uint8_t*)output, result_len, hex_output);
+
+                uart_puts("\r\nResposta (HEX):\r\n");
+                uart_puts(hex_output);
+                uart_puts("\r\n");
+            }
+        } 
+        /* Descriptografar */
+        else {
+            if (escolha == ALG_CESAR) {
+                benchmark_start(&start);
+                uint32_t result_len = decrypt((crypto_algorithm_t)escolha,
+                        (uint8_t*)buffer,
+                        (uint8_t*)output,
+                        (uint32_t)i);
+                benchmark_end(&end);
+                        
+                output[result_len] = '\0';
+                uart_puts("\r\nResposta (Texto):\r\n");
+                uart_puts(output);
+                uart_puts("\r\n");
+            } else {
+                /* AES / Blowfish: HEX -> binário -> decrypt */
+                uint8_t bin_input[TEST_SIZE];
+                uint32_t bin_len = hex_to_buffer(buffer, bin_input);
+
+                uint32_t result_len = decrypt((crypto_algorithm_t)escolha,
+                                              (uint8_t*)bin_input,
+                                              (uint8_t*)output,
+                                              bin_len);
+
+                output[result_len] = '\0';
+                uart_puts("\r\nResposta (Texto):\r\n");
+                uart_puts(output);
+                uart_puts("\r\n");
+            }
         }
 
-        output[i] = '\0';
-        benchmark_end(&end);
+
 
         uint64_t tempo_us = end - start;
         float throughput = benchmark_calc_throughput(i, tempo_us);
 
         /* Mostra resultado */
-        uart_puts("\r\nResposta:\r\n");
-        uart_puts(output);
-        uart_puts("\r\n");
-
-        char msg[32];
         uart_puts("Tempo (us): ");
+        char msg[32];
         uitoa(tempo_us, msg);
         uart_puts(msg);
         uart_puts("\r\n");

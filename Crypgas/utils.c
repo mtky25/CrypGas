@@ -85,3 +85,22 @@ int atoi(const char *str) {
 
     return result * sign;
 }
+void buffer_to_hex(const uint8_t *in, uint32_t len, char *out) {
+    const char hex_chars[] = "0123456789ABCDEF";
+    for (uint32_t i = 0; i < len; i++) {
+        out[i * 2] = hex_chars[(in[i] >> 4) & 0x0F];
+        out[i * 2 + 1] = hex_chars[in[i] & 0x0F];
+    }
+    out[len * 2] = '\0';
+}
+
+uint32_t hex_to_buffer(const char *in, uint8_t *out) {
+    uint32_t len = 0;
+    while (in[0] && in[1]) {
+        uint8_t high = (in[0] <= '9') ? in[0] - '0' : (in[0] & ~0x20) - 'A' + 10;
+        uint8_t low  = (in[1] <= '9') ? in[1] - '0' : (in[1] & ~0x20) - 'A' + 10;
+        out[len++] = (high << 4) | low;
+        in += 2;
+    }
+    return len;
+}
