@@ -22,3 +22,9 @@ void apply_cifra(char *str, int chave) {
         str[i] = cifra_cesar(str[i], chave);
     }
 }
+
+void apply_cifra_dec(char *str, int chave) {
+    for (int i = 0; str[i] != '\0'; i++) {
+        str[i] = cifra_cesar(str[i], -chave);
+    }
+}

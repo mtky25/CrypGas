@@ -1,24 +1,31 @@
 ENTRY(_start)
 
-SECTIONS {
-    . = 0x8000;
+MEMORY
+{
+    RAM (rwx) : ORIGIN = 0x8000, LENGTH = 64M   /* Endereço inicial do Pi 2 */
+}
 
+SECTIONS
+{
     .text : {
-        *(.text)
-    }
+        *(.text*)
+    } > RAM
+
     .rodata : {
         *(.rodata*)
-    }
+    } > RAM
+
     .data : {
         *(.data*)
-    }
+    } > RAM
 
-    .bss : {
+    .bss (NOLOAD) : {
+        __bss_start = .;
         *(.bss*)
         *(COMMON)
-        . = ALIGN(8);
-    }
+        __bss_end = .;
+    } > RAM
 
-    . = . + 0x1000;
-    stack_top = .;
+    /* Heap começa logo após bss */
+    __end = .;
 }
