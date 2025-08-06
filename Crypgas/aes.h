@@ -1,31 +1,27 @@
-void expandKey(unsigned char *expandedKey, unsigned char *key, enum keySize, size_t expandedKeySize);
+#ifndef AES_H
+#define AES_H
 
-// Implementation: AES Encryption
+#include <stdint.h>
+#include <stddef.h>
 
-// Implementation: subBytes
-void subBytes(unsigned char *state);
-// Implementation: shiftRows
-void shiftRows(unsigned char *state);
-void shiftRow(unsigned char *state, unsigned char nbr);
-// Implementation: addRoundKey
-void addRoundKey(unsigned char *state, unsigned char *roundKey);
-// Implementation: mixColumns
-unsigned char galois_multiplication(unsigned char a, unsigned char b);
-void mixColumns(unsigned char *state);
-void mixColumn(unsigned char *column);
-// Implementation: AES round
-void aes_round(unsigned char *state, unsigned char *roundKey);
-// Implementation: the main AES body
-void createRoundKey(unsigned char *expandedKey, unsigned char *roundKey);
-void aes_main(unsigned char *state, unsigned char *expandedKey, int nbrRounds);
-// Implementation: AES encryption
-char aes_encrypt(unsigned char *input, unsigned char *output, unsigned char *key, enum keySize size);
-// AES Decryption
-void invSubBytes(unsigned char *state);
-void invShiftRows(unsigned char *state);
-void invShiftRow(unsigned char *state, unsigned char nbr);
-void invMixColumns(unsigned char *state);
-void invMixColumn(unsigned char *column);
-void aes_invRound(unsigned char *state, unsigned char *roundKey);
-void aes_invMain(unsigned char *state, unsigned char *expandedKey, int nbrRounds);
-char aes_decrypt(unsigned char *input, unsigned char *output, unsigned char *key, enum keySize size);
+#define AES_BLOCK_SIZE 16
+
+typedef struct {
+    uint8_t round_keys[176]; // 11 round keys (16 bytes cada) para AES-128
+} aes_ctx_t;
+
+/* Inicializa chave AES-128 */
+void aes_init(aes_ctx_t *ctx, const uint8_t *key);
+
+/* Criptografa/descriptografa um bloco (ECB) */
+void aes_encrypt_block(aes_ctx_t *ctx, uint8_t block[16]);
+void aes_decrypt_block(aes_ctx_t *ctx, uint8_t block[16]);
+
+/* CBC com PKCS#7 */
+void aes_encrypt_cbc_padded(aes_ctx_t *ctx, const uint8_t *input, uint32_t len,
+                            uint8_t *output, uint32_t *out_len, const uint8_t iv[16]);
+
+void aes_decrypt_cbc_padded(aes_ctx_t *ctx, const uint8_t *input, uint32_t len,
+                            uint8_t *output, uint32_t *out_len, const uint8_t iv[16]);
+
+#endif

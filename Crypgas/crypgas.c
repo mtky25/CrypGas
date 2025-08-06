@@ -1,46 +1,84 @@
 #include "crypgas.h"
 #include "cesar.h"
-// #include "aes.h"
-#include "../AES/aes.h"
-// #include "des.h"
-// #include "blowfish.h"
+#include "aes.h"
+#include "blowfish.h"
+#include <stdlib.h>
+#include <string.h>
 
-void encrypt(crypto_algorithm_t alg, uint8_t *input, uint8_t *output, size_t len) {
+/* Criptografar: retorna tamanho real do output */
+uint32_t encrypt(crypto_algorithm_t alg, uint8_t *input, uint8_t *output, uint32_t len) {
+    uint32_t output_len = 0;
+
     switch (alg) {
         case ALG_CESAR:
-            apply_cifra((char*)input, 3); // César usa inplace
-            for (size_t i = 0; i < len; i++) output[i] = input[i];
+            apply_cifra((char*)input, 3); // César é inplace
+            memcpy(output, input, len);
+            output_len = len;
             break;
 
         case ALG_AES: {
-            // Chave igual ao main
-            unsigned char key[16] = {'k','k','k','k','e','e','e','e','y','y','y','y','.','.','.','.'};
-            enum keySize size = SIZE_16;
-            aes_cbc_result_t result = aes_encrypt_buffer_cbc(input, len, key, size);
-            if (result.ciphertext && result.ciphertext_len <= len) {
-                memcpy(output, result.ciphertext, result.ciphertext_len);
-            } else if (result.ciphertext) {
-                // Se output for menor que ciphertext_len, copia só o que cabe
-                memcpy(output, result.ciphertext, len);
-            }
-            // (Opcional: salvar IV em algum lugar, se precisar para descriptografia)
-            if (result.ciphertext) free(result.ciphertext);
+            aes_ctx_t ctx;
+            uint8_t key[16] = {'a','e','s','k','e','y','1','2','8','b','i','t','0','0','0','1'};
+            uint8_t iv[16]  = {0};
+
+            aes_init(&ctx, key);
+            aes_encrypt_cbc_padded(&ctx, input, len, output, &output_len, iv);
             break;
         }
 
-        case ALG_DES:
-            des_encrypt(input, output, len);
-            break;
+        case ALG_BLOWFISH: {
+            blowfish_ctx_t ctx;
+            uint8_t key[] = {'b','l','o','w','f','i','s','h','k','e','y'};
+            uint8_t iv[BLOWFISH_BLOCK_SIZE] = {0};
 
-        case ALG_BLOWFISH:
-            size_t len = strlen(frase);
-            if (frase[len - 1] == '\n') frase[len - 1] = '\0';
-            len = strlen(frase);
-            blowfish_encrypt_cbc(uint8_t *data, size_t len)
+            blowfish_init(&ctx, key, sizeof(key));
+            blowfish_encrypt_cbc_padded(&ctx, input, len, output, &output_len, iv);
             break;
+        }
 
         default:
-            // Algoritmo inválido
+            output_len = 0;
             break;
     }
+
+    return output_len;
+}
+
+/* Descriptografar: retorna tamanho real do output */
+uint32_t decrypt(crypto_algorithm_t alg, uint8_t *input, uint8_t *output, uint32_t len) {
+    uint32_t output_len = 0;
+
+    switch (alg) {
+        case ALG_CESAR:
+            apply_cifra_dec((char*)input, 3);
+            memcpy(output, input, len);
+            output_len = len;
+            break;
+            
+        case ALG_AES: {
+            aes_ctx_t ctx;
+            uint8_t key[16] = {'a','e','s','k','e','y','1','2','8','b','i','t','0','0','0','1'};
+            uint8_t iv[16]  = {0};
+
+            aes_init(&ctx, key);
+            aes_decrypt_cbc_padded(&ctx, input, len, output, &output_len, iv);
+            break;
+        }
+
+        case ALG_BLOWFISH: {
+            blowfish_ctx_t ctx;
+            uint8_t key[] = {'b','l','o','w','f','i','s','h','k','e','y'};
+            uint8_t iv[BLOWFISH_BLOCK_SIZE] = {0};
+
+            blowfish_init(&ctx, key, sizeof(key));
+            blowfish_decrypt_cbc_padded(&ctx, input, len, output, &output_len, iv);
+            break;
+        }
+
+        default:
+            output_len = 0;
+            break;
+    }
+
+    return output_len;
 }
