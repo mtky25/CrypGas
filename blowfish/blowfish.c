@@ -125,19 +125,26 @@ void blowfish_decrypt_cbc(uint8_t *data, size_t len, uint32_t iv_left, uint32_t 
     }
 }
 
-int main() {
-    char frase[256];
-    printf("Digite uma frase (até 255 caracteres):\n");
-    fgets(frase, sizeof(frase), stdin);
 
-    size_t len = strlen(frase);
-    if (frase[len - 1] == '\n') frase[len - 1] = '\0';
-    len = strlen(frase);
-
-    // Padding para múltiplo de 8 bytes
-    size_t padded_len = ((len + 7) / 8) * 8;
-    uint8_t *buffer = calloc(padded_len, 1);
-    memcpy(buffer, frase, len);
+int main(int argc, char *argv[]) {
+    const char *filename = argc > 1 ? argv[1] : "text.txt";
+    FILE *fp = fopen(filename, "rb");
+    if (!fp) {
+        printf("Erro ao abrir o arquivo %s\n", filename);
+        return 1;
+    }
+    fseek(fp, 0, SEEK_END);
+    long filesize = ftell(fp);
+    fseek(fp, 0, SEEK_SET);
+    uint8_t *buffer = calloc(((filesize + 7) / 8) * 8, 1);
+    if (!buffer) {
+        printf("Erro de memória\n");
+        fclose(fp);
+        return 1;
+    }
+    size_t read_bytes = fread(buffer, 1, filesize, fp);
+    fclose(fp);
+    size_t padded_len = ((read_bytes + 7) / 8) * 8;
 
     // Vetor de inicialização (IV) fixo para exemplo
     uint32_t iv_left = 0x12345678;
@@ -164,7 +171,8 @@ int main() {
     blowfish_decrypt_cbc(buffer, padded_len, iv_left, iv_right);
 
     printf("\nDescriptografado:\n");
-    printf("%s\n", buffer);
+    fwrite(buffer, 1, read_bytes, stdout);
+    printf("\n");
 
     free(buffer);
     return 0;
