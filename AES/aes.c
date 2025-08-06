@@ -1,3 +1,7 @@
+// Includes padrão necessários para malloc, free, memcpy, memset, srand, rand, time
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
 #include "aes.h"
 // Função utilitária para CBC com padding e IV igual ao main
 aes_cbc_result_t aes_encrypt_buffer_cbc(const unsigned char *input, size_t input_len, const unsigned char *key, enum keySize size) {
@@ -118,12 +122,7 @@ void core(unsigned char *word, int iteration);
 
 // Implementation: Key Expansion
 
-enum keySize
-{
-    SIZE_16 = 16,
-    SIZE_24 = 24,
-    SIZE_32 = 32
-};
+
 
 void expandKey(unsigned char *expandedKey, unsigned char *key, enum keySize, size_t expandedKeySize);
 
