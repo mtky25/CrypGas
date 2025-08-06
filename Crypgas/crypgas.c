@@ -16,11 +16,15 @@ uint32_t encrypt(crypto_algorithm_t alg, uint8_t *input, uint8_t *output, uint32
             output_len = len;
             break;
 
-        case ALG_AES:
-            // Placeholder AES CBC (implementar se necessário)
-            memcpy(output, input, len);
-            output_len = len;
+        case ALG_AES: {
+            aes_ctx_t ctx;
+            uint8_t key[16] = {'a','e','s','k','e','y','1','2','8','b','i','t','0','0','0','1'};
+            uint8_t iv[16]  = {0};
+
+            aes_init(&ctx, key, sizeof(key));
+            aes_encrypt_cbc_padded(&ctx, input, len, output, &output_len, iv);
             break;
+        }
 
         case ALG_BLOWFISH: {
             blowfish_ctx_t ctx;
@@ -50,12 +54,15 @@ uint32_t decrypt(crypto_algorithm_t alg, uint8_t *input, uint8_t *output, uint32
             memcpy(output, input, len);
             output_len = len;
             break;
+        case ALG_AES: {
+            aes_ctx_t ctx;
+            uint8_t key[16] = {'a','e','s','k','e','y','1','2','8','b','i','t','0','0','0','1'};
+            uint8_t iv[16]  = {0};
 
-        case ALG_AES:
-            // Placeholder AES CBC
-            memcpy(output, input, len);
-            output_len = len;
+            aes_init(&ctx, key, sizeof(key));
+            aes_decrypt_cbc_padded(&ctx, input, len, output, &output_len, iv);
             break;
+        }
 
         case ALG_BLOWFISH: {
             blowfish_ctx_t ctx;

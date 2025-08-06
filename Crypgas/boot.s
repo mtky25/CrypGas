@@ -1,20 +1,25 @@
-.section .text
 .global _start
 
+.section .text
 _start:
-    cpsid if
-    mrs r0, cpsr
-    bic r0, r0, #0x1F
-    orr r0, r0, #0x13     /* modo SVC */
-    msr cpsr_c, r0
+    /* Desabilita IRQs */
+    cpsid i
 
-    ldr sp, =stack_top
+    /* Zera .bss */
+    ldr r0, =__bss_start
+    ldr r1, =__bss_end
+    mov r2, #0
+bss_clear:
+    cmp r0, r1
+    itt lt
+    strlt r2, [r0], #4
+    blt bss_clear
+
+    /* Configura stack pointer (SP) bem acima da bss) */
+    ldr sp, =0x80000   /* 512KB de stack - pode ajustar */
+
+    /* Chama main() */
     bl main
 
 hang:
     b hang
-
-.align 4
-.section .bss
-.space 4096
-stack_top:
