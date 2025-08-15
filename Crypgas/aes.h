@@ -9,18 +9,11 @@
 typedef struct {
     uint8_t round_keys[176]; // 11 round keys (16 bytes cada) para AES-128
 } aes_ctx_t;
-
-/* Inicializa chave AES-128 */
 void aes_init(aes_ctx_t *ctx, const uint8_t *key);
-
-/* Criptografa/descriptografa um bloco (ECB) */
 void aes_encrypt_block(aes_ctx_t *ctx, uint8_t block[16]);
 void aes_decrypt_block(aes_ctx_t *ctx, uint8_t block[16]);
-
-/* CBC com PKCS#7 */
 void aes_encrypt_cbc_padded(aes_ctx_t *ctx, const uint8_t *input, uint32_t len,
                             uint8_t *output, uint32_t *out_len, const uint8_t iv[16]);
-
 void aes_decrypt_cbc_padded(aes_ctx_t *ctx, const uint8_t *input, uint32_t len,
                             uint8_t *output, uint32_t *out_len, const uint8_t iv[16]);
 

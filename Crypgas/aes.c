@@ -64,7 +64,6 @@ static void KeyExpansion(uint8_t *round_keys, const uint8_t *key) {
     }
 }
 
-/* Funções AddRoundKey, SubBytes, ShiftRows, MixColumns etc. implementadas aqui (mínimas) */
 static void AddRoundKey(uint8_t *state, const uint8_t *round_key) {
     for (int i = 0; i < 16; i++) state[i] ^= round_key[i];
 }

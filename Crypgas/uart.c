@@ -41,22 +41,19 @@ void uart_puts(const char *str){
 }
 
 void uart_put_uint(uint32_t num) {
-    char buffer[11];  // até 4.294.967.295
+    char buffer[11];
     int i = 0;
 
-    // Se for zero
     if (num == 0) {
         uart_send('0');
         return;
     }
 
-    // Converte para string invertida
     while (num > 0) {
         buffer[i++] = '0' + (num % 10);
         num /= 10;
     }
 
-    // Imprime na ordem correta
     while (i--) {
         uart_send(buffer[i]);
     }

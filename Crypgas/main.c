@@ -98,7 +98,7 @@ int main(void) {
             while (1) {
                 c = uart_get();
 
-                if ((c == '\b' || c == 127) && i > 0) {  // Backspace
+                if ((c == '\b' || c == 127) && i > 0) { 
                     i--;
                     uart_puts("\b \b");
                     continue;
@@ -122,7 +122,6 @@ int main(void) {
                 break;
             }
         } else {
-            /* Benchmark automático sempre 8000 bytes */
             fill_input(tipo_input, tamanho);
             i = tamanho;
         }
@@ -132,7 +131,7 @@ int main(void) {
 
         benchmark_start(&start);
         benchmark_end(&end);
-        /* Criptografar */
+
         if (operacao == 1) {
             benchmark_start(&start);
             uint32_t result_len = encrypt((crypto_algorithm_t)escolha,
@@ -170,7 +169,6 @@ int main(void) {
                 uart_puts(output);
                 uart_puts("\r\n");
             } else {
-                /* AES / Blowfish: HEX -> binário -> decrypt */
                 uint8_t bin_input[TEST_SIZE];
                 uint32_t bin_len = hex_to_buffer(buffer, bin_input);
 
