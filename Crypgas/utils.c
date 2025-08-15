@@ -16,7 +16,6 @@ void uitoa(uint32_t num, char *str) {
         num /= 10;
     }
 
-    // Inverter string
     int j = 0;
     while (i > 0) {
         str[j++] = buffer[--i];
@@ -61,15 +60,12 @@ void uitox(uint32_t num, char *str, int with_prefix) {
     str[j] = '\0';
 }
 
-/* Implementação simples de atoi */
 int atoi(const char *str) {
     int result = 0;
     int sign = 1;
 
-    // Ignora espaços
     while (*str == ' ') str++;
 
-    // Verifica sinal
     if (*str == '-') {
         sign = -1;
         str++;
@@ -77,7 +73,6 @@ int atoi(const char *str) {
         str++;
     }
 
-    // Converte dígitos
     while (*str >= '0' && *str <= '9') {
         result = result * 10 + (*str - '0');
         str++;

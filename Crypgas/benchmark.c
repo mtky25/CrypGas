@@ -5,7 +5,6 @@
 #define SYSTEM_TIMER_CLO  (SYSTEM_TIMER_BASE + 0x04)
 #define SYSTEM_TIMER_CHI  (SYSTEM_TIMER_BASE + 0x08)
 
-/* Leitura de 64 bits do System Timer */
 uint64_t benchmark_get_system_timer(void) {
     uint32_t hi, lo;
     do {
